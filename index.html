@@ -461,37 +461,53 @@
             event.currentTarget.classList.add("selected");
         }
 
-        async function submitToMongo() {
-      const data = {
-        name: "Venura Jayasingha",
-        age: "25",
-        gender: "Male",
-        lookingFor: "Female",
-        location: "Colombo",
-        q1: "Yes",
-        q2: "No",
-        q3: "Sometimes",
-        q4: "Very Important",
-        q5: "Not Really",
-        q6: "Daily",
-        q7: "Cats",
-        q8: "Mountains",
-        q9: "Extrovert",
-        q10: "Adventurous"
-      };
+       async function submitToMongo() {
+    // Show loading
+    document.getElementById("loading").classList.remove("hidden");
 
-      const response = await fetch("https://sheetdb.io/api/v1/sl9z2gwc4z103", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ data })
-      });
+    // Collect basic info from form inputs
+    const name = document.getElementById("name").value.trim();
+    const age = document.getElementById("age").value.trim();
+    const gender = document.getElementById("gender").value;
+    const lookingFor = document.getElementById("lookingFor").value;
+    const location = document.getElementById("location").value.trim();
 
-      const result = await response.json();
-      console.log("Submitted:", result);
-      alert("Submitted to SheetDB!");
+    // Merge basic info + answers from steps 2-11
+    const data = {
+        name,
+        age,
+        gender,
+        lookingFor,
+        location,
+        ...answers // contains q1 to q10
+    };
+
+    try {
+        const response = await fetch("https://sheetdb.io/api/v1/sl9z2gwc4z103", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ data: [data] }) // Wrap in array!
+        });
+
+        const result = await response.json();
+        console.log("Submitted:", result);
+
+        if (response.ok) {
+            document.getElementById("loading").classList.add("hidden");
+            document.getElementById("success").classList.remove("hidden");
+        } else {
+            alert("Something went wrong. Please try again.");
+            document.getElementById("loading").classList.add("hidden");
+        }
+    } catch (err) {
+        console.error("Submit error:", err);
+        alert("An error occurred while submitting.");
+        document.getElementById("loading").classList.add("hidden");
     }
+}
+
 
 
         // Initialize
