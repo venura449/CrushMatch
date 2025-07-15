@@ -48,6 +48,12 @@
         <div class="header text-center mb-8">
             <h1 class="text-4xl font-bold text-pink-600 mb-2">💕 CrushMatch</h1>
             <p class="text-lg text-gray-600">Find your perfect match with AI-powered compatibility</p>
+            <button 
+                onclick="viewMatches()" 
+                class="mt-4 px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition font-semibold shadow"
+            >
+                Check Matches
+            </button>
         </div>
 
         <div class="form-container bg-white rounded-xl shadow-lg overflow-hidden">
@@ -414,18 +420,35 @@
 
         <!-- Success Screen -->
         <div class="success-message hidden fixed inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50" id="success">
-  <div class="success-icon text-6xl mb-4">🎉</div>
-  <h2 class="text-3xl font-bold text-gray-800 mb-2">Profile Created Successfully!</h2>
-  <p class="text-lg text-gray-600 text-center max-w-md">Your information has been saved securely. You'll receive match notifications soon.</p>
-  
-  <button 
-    onclick="window.location.reload()" 
-    class="mt-6 px-6 py-3 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition"
-  >
-    Click Here to Go Dashboard...
-  </button>
-</div>
-
+            <div class="success-icon text-6xl mb-4">🎉</div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Profile Created Successfully!</h2>
+            <p class="text-lg text-gray-600 text-center max-w-md mb-6">Your information has been saved securely. You'll receive match notifications soon.</p>
+            
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button 
+                    onclick="window.location.reload()" 
+                    class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                >
+                    Back to Home
+                </button>
+                <button 
+                    onclick="viewMatches()" 
+                    class="px-6 py-3 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition"
+                >
+                    View Your Matches
+                </button>
+            </div>
+        </div>
+        <!-- Check Matches Overlay -->
+        <div id="matchesOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center relative">
+                <button onclick="closeMatchesOverlay()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold">&times;</button>
+                <div class="text-5xl mb-4">🤖</div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Coming Soon!</h2>
+                <p class="text-lg text-gray-600 mb-4">This AI model is still in training.<br>Features are coming soon.</p>
+                <button onclick="closeMatchesOverlay()" class="mt-2 px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition font-semibold">Close</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -469,52 +492,57 @@
             event.currentTarget.classList.add("selected");
         }
 
-   async function submitToMongo() {
-    document.getElementById("loading").classList.remove("hidden");
-
-    const name = document.getElementById("name").value.trim();
-    const age = document.getElementById("age").value.trim();
-    const gender = document.getElementById("gender").value;
-    const lookingFor = document.getElementById("lookingFor").value;
-    const location = document.getElementById("location").value.trim();
-
-    const data = {
-        name,
-        age,
-        gender,
-        lookingFor,
-        location,
-        ...answers
-    };
-
-    try {
-        const response = await fetch("https://sheetdb.io/api/v1/sl9z2gwc4z103", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ data: [data] }) // ✅ FIXED: wrap in array
-        });
-
-        const result = await response.json();
-        console.log("Submitted:", result);
-
-        if (response.ok) {
-            document.getElementById("loading").classList.add("hidden");
-            document.getElementById("success").classList.remove("hidden");
-        } else {
-            alert("Something went wrong. Check your SheetDB format.");
-            document.getElementById("loading").classList.add("hidden");
+        function viewMatches() {
+            // Show overlay for coming soon
+            document.getElementById('matchesOverlay').classList.remove('hidden');
         }
-    } catch (err) {
-        console.error("Submit error:", err);
-        alert("An error occurred while submitting.");
-        document.getElementById("loading").classList.add("hidden");
-    }
-}
+        function closeMatchesOverlay() {
+            document.getElementById('matchesOverlay').classList.add('hidden');
+        }
 
+        async function submitToMongo() {
+            document.getElementById("loading").classList.remove("hidden");
 
+            const name = document.getElementById("name").value.trim();
+            const age = document.getElementById("age").value.trim();
+            const gender = document.getElementById("gender").value;
+            const lookingFor = document.getElementById("lookingFor").value;
+            const location = document.getElementById("location").value.trim();
 
+            const data = {
+                name,
+                age,
+                gender,
+                lookingFor,
+                location,
+                ...answers
+            };
+
+            try {
+                const response = await fetch("https://sheetdb.io/api/v1/sl9z2gwc4z103", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ data: [data] })
+                });
+
+                const result = await response.json();
+                console.log("Submitted:", result);
+
+                if (response.ok) {
+                    document.getElementById("loading").classList.add("hidden");
+                    document.getElementById("success").classList.remove("hidden");
+                } else {
+                    alert("Something went wrong. Check your SheetDB format.");
+                    document.getElementById("loading").classList.add("hidden");
+                }
+            } catch (err) {
+                console.error("Submit error:", err);
+                alert("An error occurred while submitting.");
+                document.getElementById("loading").classList.add("hidden");
+            }
+        }
 
         // Initialize
         showStep(currentStep);
