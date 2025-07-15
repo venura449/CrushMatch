@@ -461,25 +461,22 @@
             event.currentTarget.classList.add("selected");
         }
 
-       async function submitToMongo() {
-    // Show loading
+   async function submitToMongo() {
     document.getElementById("loading").classList.remove("hidden");
 
-    // Collect basic info from form inputs
     const name = document.getElementById("name").value.trim();
     const age = document.getElementById("age").value.trim();
     const gender = document.getElementById("gender").value;
     const lookingFor = document.getElementById("lookingFor").value;
     const location = document.getElementById("location").value.trim();
 
-    // Merge basic info + answers from steps 2-11
     const data = {
         name,
         age,
         gender,
         lookingFor,
         location,
-        ...answers // contains q1 to q10
+        ...answers
     };
 
     try {
@@ -488,7 +485,7 @@
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ data: [data] }) // Wrap in array!
+            body: JSON.stringify({ data: [data] }) // ✅ FIXED: wrap in array
         });
 
         const result = await response.json();
@@ -498,7 +495,7 @@
             document.getElementById("loading").classList.add("hidden");
             document.getElementById("success").classList.remove("hidden");
         } else {
-            alert("Something went wrong. Please try again.");
+            alert("Something went wrong. Check your SheetDB format.");
             document.getElementById("loading").classList.add("hidden");
         }
     } catch (err) {
@@ -507,6 +504,7 @@
         document.getElementById("loading").classList.add("hidden");
     }
 }
+
 
 
 
