@@ -487,11 +487,12 @@
     document.getElementById("loading").classList.remove("hidden");
 
     try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbyZVgTsadWu83G3EY7uPQKAnhSXIKAGVdl4SX-i0Xgho5vonexX0w8x3H9eqKOiWeKl/exec", {
+        const response = await fetch("/api/submit", {
             method: "POST",
-            body: JSON.stringify(data),
-            headers: { "Content-Type": "application/json" }
-        });
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+            });
+
 
         document.getElementById("loading").classList.add("hidden");
 
