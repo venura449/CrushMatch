@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrushMatch - Find Your Perfect Match</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        .floating-shapes .shape {
+            animation: float 6s ease-in-out infinite;
+        }
+        .floating-shapes .shape:nth-child(2) {
+            animation-delay: 1s;
+        }
+        .floating-shapes .shape:nth-child(3) {
+            animation-delay: 2s;
+        }
+        .spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid #ec4899;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .option.selected {
+            border-color: #ec4899;
+            background-color: #fdf2f8;
+        }
+    </style>
+</head>
+<body class="bg-pink-50 min-h-screen font-sans">
+    <div class="floating-shapes fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="shape absolute top-1/4 left-1/6 w-16 h-16 rounded-full bg-pink-200 opacity-20"></div>
+        <div class="shape absolute top-1/3 right-1/5 w-24 h-24 rounded-full bg-purple-200 opacity-20"></div>
+        <div class="shape absolute bottom-1/4 right-1/4 w-20 h-20 rounded-full bg-indigo-200 opacity-20"></div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-3xl">
+        <div class="header text-center mb-8">
+            <h1 class="text-4xl font-bold text-pink-600 mb-2">💕 CrushMatch</h1>
+            <p class="text-lg text-gray-600">Find your perfect match with AI-powered compatibility</p>
+        </div>
+
+        <div class="form-container bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="progress-container p-6">
+                <div class="progress-bar bg-gray-200 rounded-full h-2.5">
+                    <div class="progress-fill bg-pink-500 h-2.5 rounded-full" id="progressFill" style="width: 0%"></div>
+                </div>
+                <p class="text-center mt-2 text-gray-600">
+                    Step <span id="currentStep" class="font-medium">1</span> of <span id="totalSteps" class="font-medium">11</span>
+                </p>
+            </div>
+
+            <!-- Step 1: Basic Information -->
+            <div class="step active p-6" id="step1">
+                <div class="step-header mb-6">
+                    <div class="step-number w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold mb-2">1</div>
+                    <h2 class="step-title text-2xl font-bold text-gray-800">Let's Get to Know You</h2>
+                    <p class="step-subtitle text-gray-600">Tell us some basic information about yourself</p>
+                </div>
+
+                <div class="form-row grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                        <input type="number" id="age" min="18" max="50" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500" required>
+                    </div>
+                </div>
+
+                <div class="form-row grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                        <select id="gender" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500" required>
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="non-binary">Non-binary</option>
+                            <option value="prefer-not-to-say">Prefer not to say</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="lookingFor" class="block text-sm font-medium text-gray-700 mb-1">Looking For</label>
+                        <select id="lookingFor" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500" required>
+                            <option value="">Select Preference</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="any">Any</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                    <input type="text" id="location" placeholder="City, Country" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500" required>
+                </div>
+            </div>
+
+            <!-- Step 2: Question 1 -->
+            <div class="step p-6 hidden" id="step2">
+                <div class="step-header mb-6">
+                    <div class="step-number w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold mb-2">2</div>
+                    <h2 class="step-title text-2xl font-bold text-gray-800">Your Daily Rhythm</h2>
+                </div>
+                <div class="question-container">
+                    <h3 class="question-title text-lg font-semibold text-gray-800 mb-4">🌅 Are you more of a morning person or night owl?</h3>
+                    <div class="options grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q1', 'morning')">
+                            <strong class="block text-pink-600">Early Bird</strong>
+                            <span class="text-gray-600 text-sm">I love mornings and sunrise!</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q1', 'afternoon')">
+                            <strong class="block text-pink-600">Afternoon Person</strong>
+                            <span class="text-gray-600 text-sm">Peak energy mid-day</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q1', 'evening')">
+                            <strong class="block text-pink-600">Evening Person</strong>
+                            <span class="text-gray-600 text-sm">I come alive after 6pm</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q1', 'night')">
+                            <strong class="block text-pink-600">Night Owl</strong>
+                            <span class="text-gray-600 text-sm">I thrive after midnight</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Question 2 -->
+            <div class="step p-6 hidden" id="step3">
+                <div class="step-header mb-6">
+                    <div class="step-number w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold mb-2">3</div>
+                    <h2 class="step-title text-2xl font-bold text-gray-800">Free Time Preferences</h2>
+                </div>
+                <div class="question-container">
+                    <h3 class="question-title text-lg font-semibold text-gray-800 mb-4">🎉 How do you prefer to spend your free time?</h3>
+                    <div class="options grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q2', 'social')">
+                            <strong class="block text-pink-600">Social Butterfly</strong>
+                            <span class="text-gray-600 text-sm">Hanging out with friends</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q2', 'adventure')">
+                            <strong class="block text-pink-600">Adventure Seeker</strong>
+                            <span class="text-gray-600 text-sm">Outdoor exploring</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q2', 'creative')">
+                            <strong class="block text-pink-600">Creative Soul</strong>
+                            <span class="text-gray-600 text-sm">Art, music, writing</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q2', 'quiet')">
+                            <strong class="block text-pink-600">Peaceful Mind</strong>
+                            <span class="text-gray-600 text-sm">Reading or puzzles</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Question 3 -->
+            <div class="step p-6 hidden" id="step4">
+                <div class="step-header mb-6">
+                    <div class="step-number w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold mb-2">4</div>
+                    <h2 class="step-title text-2xl font-bold text-gray-800">Communication Style</h2>
+                </div>
+                <div class="question-container">
+                    <h3 class="question-title text-lg font-semibold text-gray-800 mb-4">💬 What's your communication style?</h3>
+                    <div class="options grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q3', 'direct')">
+                            <strong class="block text-pink-600">Direct & Clear</strong>
+                            <span class="text-gray-600 text-sm">Straightforward approach</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q3', 'thoughtful')">
+                            <strong class="block text-pink-600">Thoughtful & Kind</strong>
+                            <span class="text-gray-600 text-sm">Considerate responses</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q3', 'playful')">
+                            <strong class="block text-pink-600">Playful & Fun</strong>
+                            <span class="text-gray-600 text-sm">Humorous conversations</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q3', 'deep')">
+                            <strong class="block text-pink-600">Deep & Meaningful</strong>
+                            <span class="text-gray-600 text-sm">Profound discussions</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Question 4 -->
+            <div class="step p-6 hidden" id="step5">
+                <div class="step-header mb-6">
+                    <div class="step-number w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold mb-2">5</div>
+                    <h2 class="step-title text-2xl font-bold text-gray-800">Ideal Date</h2>
+                </div>
+                <div class="question-container">
+                    <h3 class="question-title text-lg font-semibold text-gray-800 mb-4">🏠 What's your ideal date scenario?</h3>
+                    <div class="options grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q4', 'cozy')">
+                            <strong class="block text-pink-600">Cozy Night In</strong>
+                            <span class="text-gray-600 text-sm">Movies and takeout</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q4', 'adventure')">
+                            <strong class="block text-pink-600">Exciting Adventure</strong>
+                            <span class="text-gray-600 text-sm">Thrilling activities</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q4', 'cultural')">
+                            <strong class="block text-pink-600">Cultural Experience</strong>
+                            <span class="text-gray-600 text-sm">Museums, concerts</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q4', 'nature')">
+                            <strong class="block text-pink-600">Nature Connection</strong>
+                            <span class="text-gray-600 text-sm">Walks, outdoor picnics</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Question 5 -->
+            <div class="step p-6 hidden" id="step6">
+                <div class="step-header mb-6">
+                    <div class="step-number w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold mb-2">6</div>
+                    <h2 class="step-title text-2xl font-bold text-gray-800">What Drives You</h2>
+                </div>
+                <div class="question-container">
+                    <h3 class="question-title text-lg font-semibold text-gray-800 mb-4">🎯 What motivates you most in life?</h3>
+                    <div class="options grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q5', 'achievement')">
+                            <strong class="block text-pink-600">Achievement</strong>
+                            <span class="text-gray-600 text-sm">Personal success</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q5', 'connection')">
+                            <strong class="block text-pink-600">Connection</strong>
+                            <span class="text-gray-600 text-sm">Meaningful relationships</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q5', 'growth')">
+                            <strong class="block text-pink-600">Growth</strong>
+                            <span class="text-gray-600 text-sm">Learning and development</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q5', 'impact')">
+                            <strong class="block text-pink-600">Impact</strong>
+                            <span class="text-gray-600 text-sm">Helping others</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 7: Question 6 -->
+            <div class="step p-6 hidden" id="step7">
+                <div class="step-header mb-6">
+                    <div class="step-number w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold mb-2">7</div>
+                    <h2 class="step-title text-2xl font-bold text-gray-800">Food & Lifestyle</h2>
+                </div>
+                <div class="question-container">
+                    <h3 class="question-title text-lg font-semibold text-gray-800 mb-4">🍕 What are your food preferences?</h3>
+                    <div class="options grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q6', 'adventurous')">
+                            <strong class="block text-pink-600">Adventurous Eater</strong>
+                            <span class="text-gray-600 text-sm">Love trying new cuisines</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q6', 'comfort')">
+                            <strong class="block text-pink-600">Comfort Food</strong>
+                            <span class="text-gray-600 text-sm">Stick to favorites</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q6', 'healthy')">
+                            <strong class="block text-pink-600">Health Conscious</strong>
+                            <span class="text-gray-600 text-sm">Nutrition focused</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q6', 'simple')">
+                            <strong class="block text-pink-600">Simple & Classic</strong>
+                            <span class="text-gray-600 text-sm">No fuss dining</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 8: Question 7 -->
+            <div class="step p-6 hidden" id="step8">
+                <div class="step-header mb-6">
+                    <div class="step-number w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold mb-2">8</div>
+                    <h2 class="step-title text-2xl font-bold text-gray-800">Stress Management</h2>
+                </div>
+                <div class="question-container">
+                    <h3 class="question-title text-lg font-semibold text-gray-800 mb-4">🧘 How do you handle stress?</h3>
+                    <div class="options grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q7', 'talk')">
+                            <strong class="block text-pink-600">Talk It Out</strong>
+                            <span class="text-gray-600 text-sm">With friends or family</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q7', 'exercise')">
+                            <strong class="block text-pink-600">Physical Activity</strong>
+                            <span class="text-gray-600 text-sm">Exercise and movement</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q7', 'alone')">
+                            <strong class="block text-pink-600">Alone Time</strong>
+                            <span class="text-gray-600 text-sm">Process and reflect</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q7', 'creative')">
+                            <strong class="block text-pink-600">Creative Outlets</strong>
+                            <span class="text-gray-600 text-sm">Music, art, writing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 9: Question 8 -->
+            <div class="step p-6 hidden" id="step9">
+                <div class="step-header mb-6">
+                    <div class="step-number w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold mb-2">9</div>
+                    <h2 class="step-title text-2xl font-bold text-gray-800">Learning Style</h2>
+                </div>
+                <div class="question-container">
+                    <h3 class="question-title text-lg font-semibold text-gray-800 mb-4">📚 What's your learning style?</h3>
+                    <div class="options grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q8', 'visual')">
+                            <strong class="block text-pink-600">Visual Learner</strong>
+                            <span class="text-gray-600 text-sm">Learn by seeing</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q8', 'hands-on')">
+                            <strong class="block text-pink-600">Hands-on Learner</strong>
+                            <span class="text-gray-600 text-sm">Learn by doing</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q8', 'discussion')">
+                            <strong class="block text-pink-600">Discussion Learner</strong>
+                            <span class="text-gray-600 text-sm">Learn by talking</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q8', 'independent')">
+                            <strong class="block text-pink-600">Independent Learner</strong>
+                            <span class="text-gray-600 text-sm">Prefer self-study</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 10: Question 9 -->
+            <div class="step p-6 hidden" id="step10">
+                <div class="step-header mb-6">
+                    <div class="step-number w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold mb-2">10</div>
+                    <h2 class="step-title text-2xl font-bold text-gray-800">Musical Taste</h2>
+                </div>
+                <div class="question-container">
+                    <h3 class="question-title text-lg font-semibold text-gray-800 mb-4">🎵 What's your music taste?</h3>
+                    <div class="options grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q9', 'pop')">
+                            <strong class="block text-pink-600">Pop Music</strong>
+                            <span class="text-gray-600 text-sm">Mainstream hits</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q9', 'indie')">
+                            <strong class="block text-pink-600">Indie & Alternative</strong>
+                            <span class="text-gray-600 text-sm">Unique sounds</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q9', 'classic')">
+                            <strong class="block text-pink-600">Classic Rock</strong>
+                            <span class="text-gray-600 text-sm">Timeless oldies</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q9', 'diverse')">
+                            <strong class="block text-pink-600">Diverse Taste</strong>
+                            <span class="text-gray-600 text-sm">Enjoy all genres</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 11: Question 10 -->
+            <div class="step p-6 hidden" id="step11">
+                <div class="step-header mb-6">
+                    <div class="step-number w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold mb-2">11</div>
+                    <h2 class="step-title text-2xl font-bold text-gray-800">Relationship Values</h2>
+                </div>
+                <div class="question-container">
+                    <h3 class="question-title text-lg font-semibold text-gray-800 mb-4">❤️ What do you value most in a relationship?</h3>
+                    <div class="options grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q10', 'trust')">
+                            <strong class="block text-pink-600">Trust & Loyalty</strong>
+                            <span class="text-gray-600 text-sm">Foundation of security</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q10', 'communication')">
+                            <strong class="block text-pink-600">Open Communication</strong>
+                            <span class="text-gray-600 text-sm">Honest conversations</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q10', 'fun')">
+                            <strong class="block text-pink-600">Fun & Laughter</strong>
+                            <span class="text-gray-600 text-sm">Shared joy and humor</span>
+                        </div>
+                        <div class="option p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors" onclick="selectAnswer('q10', 'growth')">
+                            <strong class="block text-pink-600">Mutual Growth</strong>
+                            <span class="text-gray-600 text-sm">Support and development</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="navigation p-6 border-t border-gray-200 flex justify-between">
+                <button class="btn px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors" id="prevBtn" onclick="prevStep()" disabled>Previous</button>
+                <button class="btn px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors" id="nextBtn" onclick="nextStep()">Next</button>
+                <button class="btn px-6 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors" id="submitBtn" onclick="submitToMongo()" style="display:none;">Finish & Save</button>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div class="loading hidden fixed inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50" id="loading">
+            <div class="spinner mb-4"></div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">Saving your information...</h3>
+            <p class="text-gray-600">Creating your perfect match profile</p>
+        </div>
+
+        <!-- Success Screen -->
+        <div class="success-message hidden fixed inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50" id="success">
+            <div class="success-icon text-6xl mb-4">🎉</div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Profile Created Successfully!</h2>
+            <p class="text-lg text-gray-600 text-center max-w-md">Your information has been saved securely. You'll receive match notifications soon.</p>
+        </div>
+    </div>
+
+    <script>
+        const answers = {};
+        let currentStep = 1;
+        const totalSteps = 11;
+
+        function showStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.step').forEach((el) => el.classList.add('hidden'));
+            // Show current step
+            document.getElementById('step' + step).classList.remove('hidden');
+            // Update progress
+            document.getElementById('currentStep').textContent = step;
+            document.getElementById('progressFill').style.width = ((step-1)/(totalSteps-1))*100 + "%";
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = step === 1;
+            document.getElementById('nextBtn').style.display = (step === totalSteps) ? 'none' : 'inline-block';
+            document.getElementById('submitBtn').style.display = (step === totalSteps) ? 'inline-block' : 'none';
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        function selectAnswer(questionKey, value) {
+            answers[questionKey] = value;
+            // Highlight selected option
+            const options = document.querySelectorAll(`#step${currentStep} .option`);
+            options.forEach(opt => opt.classList.remove("selected"));
+            event.currentTarget.classList.add("selected");
+        }
+
+        async function submitToMongo() {
+    if (currentStep === 1) {
+        const name = document.getElementById("name").value;
+        const age = document.getElementById("age").value;
+        const gender = document.getElementById("gender").value;
+        const lookingFor = document.getElementById("lookingFor").value;
+        const location = document.getElementById("location").value;
+        
+        if (!name || !age || !gender || !lookingFor || !location) {
+            alert("Please fill in all required fields");
+            return;
+        }
+    }
+
+    const data = {
+        name: document.getElementById("name").value,
+        age: document.getElementById("age").value,
+        gender: document.getElementById("gender").value,
+        lookingFor: document.getElementById("lookingFor").value,
+        location: document.getElementById("location").value,
+        ...answers 
+    };
+
+    document.getElementById("loading").classList.remove("hidden");
+
+    try {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbyZVgTsadWu83G3EY7uPQKAnhSXIKAGVdl4SX-i0Xgho5vonexX0w8x3H9eqKOiWeKl/exec", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: { "Content-Type": "application/json" }
+        });
+
+        document.getElementById("loading").classList.add("hidden");
+
+        if (response.ok) {
+            document.getElementById("success").classList.remove("hidden");
+            document.querySelector('.form-container').classList.add("hidden");
+        } else {
+            alert("Failed to save. Try again.");
+        }
+    } catch (error) {
+        document.getElementById("loading").classList.add("hidden");
+        alert("Error: " + error.message);
+    }
+}
+
+
+        // Initialize
+        showStep(currentStep);
+    </script>
+</body>
+</html>
