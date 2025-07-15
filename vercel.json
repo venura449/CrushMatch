@@ -1,7 +1,7 @@
 {
     "functions": {
       "api/submit.js": {
-        "runtime": "edge"  
+        "runtime": "nodejs18.x"  
       }
     }
   }
